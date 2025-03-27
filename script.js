@@ -1,4 +1,5 @@
-let movieList = [];
+// Recupera la lista dei film dal LocalStorage (se esiste) all'inizio
+let movieList = JSON.parse(localStorage.getItem('movieList')) || [];
 
 function addMovie() {
     const movieInput = document.getElementById('movieInput');
@@ -7,6 +8,7 @@ function addMovie() {
         movieList.push(movieName);
         movieInput.value = ''; // pulisce il campo di input
         updateMovieList();
+        saveMoviesToLocalStorage(); // Salva la lista nel LocalStorage
     }
 }
 
@@ -30,3 +32,11 @@ function chooseRandomMovie() {
         document.getElementById('randomMovie').textContent = `Film scelto: ${randomMovie}`;
     }
 }
+
+// Salva la lista di film nel LocalStorage
+function saveMoviesToLocalStorage() {
+    localStorage.setItem('movieList', JSON.stringify(movieList));
+}
+
+// Carica la lista dei film quando la pagina si carica
+window.onload = updateMovieList;
