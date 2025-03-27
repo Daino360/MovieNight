@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Film Casual</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Lista Film</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Lista dei Film</h1>
+    <div>
         <input type="text" id="movieInput" placeholder="Aggiungi un film">
         <button onclick="addMovie()">Aggiungi Film</button>
-        
-        <h2>Lista dei film:</h2>
-        <ul id="movieList"></ul>
-
-        <button onclick="chooseRandomMovie()">Scegli un film casuale</button>
-
-        <p id="randomMovie"></p>
+        <button onclick="chooseRandomMovie()">Scegli Film Casuale</button>
     </div>
+
+    <ul id="movieList"></ul>
+    <div id="randomMovie"></div>
 
     <script src="script.js"></script>
 </body>
