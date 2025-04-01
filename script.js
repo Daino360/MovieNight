@@ -81,6 +81,7 @@ function chooseRandomMovie() {
 
 // Aggiungi l'event listener al bottone 'Aggiungi Film'
 document.getElementById('addMovieButton').addEventListener('click', addMovie);
+document.getElementById('chooseRandomMovieButton').addEventListener('click', chooseRandomMovie);
 
 // Carica la lista all'avvio
 document.addEventListener("DOMContentLoaded", updateMovieList);
