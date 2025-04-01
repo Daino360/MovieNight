@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista Film</title>
-    <link rel="stylesheet" href="style.css">  <!-- Verifica che il nome e il percorso siano corretti -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
+    <div class="container">
+        <h1>Lista Film</h1>
         <input type="text" id="movieInput" placeholder="Aggiungi un film">
-        <button onclick="addMovie()">Aggiungi Film</button>
-        <button onclick="chooseRandomMovie()">Scegli Film Casuale</button>
+        <button onclick="addMovie()">Aggiungi</button>
+        <button onclick="chooseRandomMovie()">Scegli Casuale</button>
+        <ul id="movieList"></ul>
+        <div id="randomMovie" class="result"></div>
     </div>
-
-    <ul id="movieList"></ul>
-    <div id="randomMovie"></div>
-
     <script src="script.js"></script>
 </body>
 </html>
