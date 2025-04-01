@@ -2,21 +2,18 @@ let movieList = JSON.parse(localStorage.getItem('movieList')) || [];
 
 document.addEventListener("DOMContentLoaded", updateMovieList);
 
-// Funzione per aggiungere un film
-async function addMovie() {
+function addMovie() {
     const movieInput = document.getElementById('movieInput');
     const movieName = movieInput.value.trim();
-    console.log('Tentativo di aggiungere il film:', movieName); // Log del nome del film
     if (movieName !== '') {
-        await addDoc(moviesCollection, { name: movieName });
+        movieList.push(movieName);
         movieInput.value = '';
         updateMovieList();
-        console.log('Film aggiunto con successo!');
-    } else {
+        saveMoviesToLocalStorage();
+	} else {
         console.log('Nome del film vuoto, nessuna azione eseguita.');
     }
 }
-
 
 function updateMovieList() {
     const movieListElement = document.getElementById('movieList');
