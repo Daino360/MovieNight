@@ -69,6 +69,16 @@ function updateMovieList() {
     });
 }
 
+function chooseRandomMovie() {
+    if (movieList.length === 0) {
+        document.getElementById('randomMovie').textContent = 'La lista è vuota!';
+    } else {
+        const randomIndex = Math.floor(Math.random() * movieList.length);
+        document.getElementById('randomMovie').textContent = `Film scelto: ${movieList[randomIndex]}`;
+    }
+}
+
+
 // Aggiungi l'event listener al bottone 'Aggiungi Film'
 document.getElementById('addMovieButton').addEventListener('click', addMovie);
 
