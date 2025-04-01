@@ -70,12 +70,25 @@ function updateMovieList() {
 }
 
 function chooseRandomMovie() {
-    if (movieList.length === 0) {
-        document.getElementById('randomMovie').textContent = 'La lista è vuota!';
-    } else {
-        const randomIndex = Math.floor(Math.random() * movieList.length);
-        document.getElementById('randomMovie').textContent = `Film scelto: ${movieList[randomIndex]}`;
-    }
+    // Ottieni i film da Firestore
+    getDocs(moviesCollection).then((querySnapshot) => {
+        const firestoreMovies = [];
+
+        querySnapshot.forEach((docSnap) => {
+            firestoreMovies.push(docSnap.data().name); // Aggiungi il nome del film alla lista
+        });
+
+        // Se non ci sono film, mostra un messaggio
+        if (firestoreMovies.length === 0) {
+            document.getElementById('randomMovie').textContent = 'La lista è vuota!';
+        } else {
+            // Scegli un film casuale
+            const randomIndex = Math.floor(Math.random() * firestoreMovies.length);
+            document.getElementById('randomMovie').textContent = `Film scelto: ${firestoreMovies[randomIndex]}`;
+        }
+    }).catch((error) => {
+        console.error("Errore nel recuperare i film: ", error);
+    });
 }
 
 
