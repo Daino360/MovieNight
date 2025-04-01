@@ -1,58 +1,3 @@
-let movieList = JSON.parse(localStorage.getItem('movieList')) || [];
-
-document.addEventListener("DOMContentLoaded", updateMovieList);
-
-function addMovie() {
-    const movieInput = document.getElementById('movieInput');
-    const movieName = movieInput.value.trim();
-    if (movieName !== '') {
-        movieList.push(movieName);
-        movieInput.value = '';
-        updateMovieList();
-        saveMoviesToLocalStorage();
-	} else {
-        console.log('Nome del film vuoto, nessuna azione eseguita.');
-    }
-}
-
-function updateMovieList() {
-    const movieListElement = document.getElementById('movieList');
-    movieListElement.innerHTML = '';
-
-    movieList.forEach((movie, index) => {
-        const li = document.createElement('li');
-        li.textContent = movie;
-        
-        const removeButton = document.createElement('button');
-        removeButton.textContent = '❌';
-        removeButton.classList.add('remove-btn');
-        removeButton.onclick = () => removeMovie(index);
-
-        li.appendChild(removeButton);
-        movieListElement.appendChild(li);
-    });
-}
-
-function removeMovie(index) {
-    movieList.splice(index, 1);
-    updateMovieList();
-    saveMoviesToLocalStorage();
-}
-
-function chooseRandomMovie() {
-    if (movieList.length === 0) {
-        document.getElementById('randomMovie').textContent = 'La lista è vuota!';
-    } else {
-        const randomIndex = Math.floor(Math.random() * movieList.length);
-        document.getElementById('randomMovie').textContent = `Film scelto: ${movieList[randomIndex]}`;
-    }
-}
-
-function saveMoviesToLocalStorage() {
-    localStorage.setItem('movieList', JSON.stringify(movieList));
-}
-
-
 // Importa Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -77,34 +22,53 @@ async function addMovie() {
     const movieInput = document.getElementById('movieInput');
     const movieName = movieInput.value.trim();
     if (movieName !== '') {
-        await addDoc(moviesCollection, { name: movieName });
-        movieInput.value = '';
-        updateMovieList();
+        try {
+            await addDoc(moviesCollection, { name: movieName });
+            console.log(`Film "${movieName}" aggiunto con successo.`);
+            movieInput.value = '';  // Pulisce l'input
+            updateMovieList();  // Ricarica la lista aggiornata
+        } catch (error) {
+            console.error("Errore nell'aggiungere il film:", error);
+        }
+    } else {
+        console.log('Nome del film vuoto, nessuna azione eseguita.');
     }
 }
 
 // Funzione per aggiornare la lista dei film
 async function updateMovieList() {
     const movieListElement = document.getElementById('movieList');
-    movieListElement.innerHTML = '';
-    const querySnapshot = await getDocs(moviesCollection);
-    
-    querySnapshot.forEach((docSnap) => {
-        const li = document.createElement('li');
-        li.textContent = docSnap.data().name;
+    movieListElement.innerHTML = '';  // Pulisce la lista esistente
 
-        // Bottone per rimuovere il film
-        const removeButton = document.createElement('button');
-        removeButton.textContent = '❌';
-        removeButton.classList.add('remove-btn');
-        removeButton.onclick = async () => {
-            await deleteDoc(doc(db, "movies", docSnap.id));
-            updateMovieList();
-        };
+    try {
+        const querySnapshot = await getDocs(moviesCollection);
+        if (querySnapshot.empty) {
+            console.log("Nessun film trovato nella collezione.");
+        }
+        querySnapshot.forEach((docSnap) => {
+            const li = document.createElement('li');
+            li.textContent = docSnap.data().name;  // Aggiungi il nome del film
 
-        li.appendChild(removeButton);
-        movieListElement.appendChild(li);
-    });
+            // Bottone per rimuovere il film
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '❌';
+            removeButton.classList.add('remove-btn');
+            removeButton.onclick = async () => {
+                try {
+                    await deleteDoc(doc(db, "movies", docSnap.id));
+                    console.log(`Film "${docSnap.data().name}" rimosso con successo.`);
+                    updateMovieList();  // Ricarica la lista dopo la rimozione
+                } catch (error) {
+                    console.error("Errore nella rimozione del film:", error);
+                }
+            };
+
+            li.appendChild(removeButton);
+            movieListElement.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Errore nel recupero dei film:", error);
+    }
 }
 
 // Carica la lista all'avvio
