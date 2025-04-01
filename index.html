@@ -9,12 +9,25 @@
 <body>
     <div class="container">
         <h1>Lista Film</h1>
+        
+        <!-- Campo per aggiungere un film -->
         <input type="text" id="movieInput" placeholder="Aggiungi un film">
-        <button onclick="addMovie()">Aggiungi</button>
-        <button onclick="chooseRandomMovie()">Scegli Casuale</button>
+        
+        <!-- Bottone per aggiungere il film, con un id specifico -->
+        <button id="addMovieButton">Aggiungi Film</button>
+        
+        <!-- Bottone per scegliere un film casuale -->
+        <button onclick="chooseRandomMovie()">Scegli Film Casuale</button>
+
+        <!-- Lista dei film -->
         <ul id="movieList"></ul>
-        <div id="randomMovie" class="result"></div>
+
+        <!-- Area per mostrare il film casuale -->
+        <div id="randomMovie"></div>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Importazione dello script JavaScript -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
+
