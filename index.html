@@ -1,3 +1,4 @@
+<!-- INDEX.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -13,8 +14,43 @@
         <!-- Campo per aggiungere un film -->
         <input type="text" id="movieInput" placeholder="Aggiungi un film">
         
-        <!-- Bottone per aggiungere il film, con un id specifico -->
+        <!-- Durata del film -->
+        <div class="filter-section">
+            <label for="movieLength">Durata:</label>
+            <select id="movieLength">
+                <option value="short">Corto (&lt;90 min)</option>
+                <option value="medium" selected>Medio (90-120 min)</option>
+                <option value="long">Lungo (&gt;120 min)</option>
+            </select>
+        </div>
+        
+        <!-- Importanza del film -->
+        <div class="filter-section">
+            <label for="movieImportance">Importanza (1-10):</label>
+            <input type="number" id="movieImportance" min="1" max="10" value="5">
+        </div>
+        
+        <!-- Bottone per aggiungere il film -->
         <button id="addMovieButton">Aggiungi Film</button>
+        
+        <!-- Filtri per la selezione casuale -->
+        <div class="random-filter">
+            <h3>Filtri per selezione casuale:</h3>
+            <div class="length-filters">
+                <label>
+                    <input type="checkbox" class="length-filter" value="short" checked>
+                    Corto
+                </label>
+                <label>
+                    <input type="checkbox" class="length-filter" value="medium" checked>
+                    Medio
+                </label>
+                <label>
+                    <input type="checkbox" class="length-filter" value="long" checked>
+                    Lungo
+                </label>
+            </div>
+        </div>
         
         <!-- Bottone per scegliere un film casuale -->
         <button id="chooseRandomMovieButton">Scegli Film Casuale</button>
@@ -30,4 +66,3 @@
     <script type="module" src="script.js"></script>
 </body>
 </html>
-
