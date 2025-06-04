@@ -1,192 +1,186 @@
-// Importa Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+// Mock data for demonstration
+        const mockMovies = [
+            { id: "1", name: "Inception", length: "long", importance: 9 },
+            { id: "2", name: "The Shawshank Redemption", length: "medium", importance: 10 },
+            { id: "3", name: "Pulp Fiction", length: "medium", importance: 8 },
+            { id: "4", name: "The Dark Knight", length: "long", importance: 10 },
+            { id: "5", name: "Fight Club", length: "medium", importance: 8 },
+            { id: "6", name: "Parasite", length: "medium", importance: 9 },
+            { id: "7", name: "Spirited Away", length: "medium", importance: 7 },
+            { id: "8", name: "Whiplash", length: "short", importance: 8 },
+            { id: "9", name: "La La Land", length: "long", importance: 7 },
+            { id: "10", name: "Get Out", length: "short", importance: 8 },
+            { id: "11", name: "The Matrix", length: "medium", importance: 9 },
+            { id: "12", name: "Goodfellas", length: "long", importance: 9 },
+            { id: "13", name: "Her", length: "medium", importance: 7 },
+            { id: "14", name: "Mad Max: Fury Road", length: "medium", importance: 8 },
+            { id: "15", name: "Interstellar", length: "long", importance: 9 },
+        ];
 
-        // Configura Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDOhGsE_267uJnYL62mS3FIV6guTN0YQws",
-            authDomain: "movienight-4dad9.firebaseapp.com",
-            projectId: "movienight-4dad9",
-            storageBucket: "movienight-4dad9.appspot.com",
-            messagingSenderId: "156742392317",
-            appId: "1:156742392317:web:bf3c17ae72cdedde872194",
-            measurementId: "G-TNQXW9YRPW"
-        };
+        // DOM elements
+        const movieListElement = document.getElementById('movieList');
+        const randomMovieElement = document.getElementById('randomMovie');
+        const addButton = document.getElementById('addMovieButton');
+        const randomButton = document.getElementById('chooseRandomMovieButton');
+        const movieInput = document.getElementById('movieInput');
+        const movieLength = document.getElementById('movieLength');
+        const movieImportance = document.getElementById('movieImportance');
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const moviesCollection = collection(db, "movies");
+        // Current movies array
+        let movies = [];
 
-        // Funzione per aggiungere un film
+        // Initialize the app
+        function init() {
+            // For demo, use mock data
+            movies = [...mockMovies];
+            updateMovieList();
+        }
+
+        // Function to add a movie
         function addMovie() {
-            const movieInput = document.getElementById('movieInput');
-            const movieName = movieInput.value.trim();
-            const movieLength = document.getElementById('movieLength').value;
-            const movieImportance = parseInt(document.getElementById('movieImportance').value);
+            const name = movieInput.value.trim();
+            const length = movieLength.value;
+            const importance = parseInt(movieImportance.value) || 5;
 
-            if (movieName !== '') {
-                // Aggiungi un film in Firestore
-                addDoc(moviesCollection, { 
-                    name: movieName,
-                    length: movieLength,
-                    importance: movieImportance
-                }).then(() => {
-                    movieInput.value = '';  // Pulisci l'input
-                    updateMovieList();      // Ricarica la lista dei film
-                }).catch((error) => {
-                    console.error('Errore durante l\'aggiunta del film: ', error);
-                    alert("Si è verificato un errore durante l'aggiunta del film.");
-                });
+            if (name) {
+                const newMovie = {
+                    id: Date.now().toString(),
+                    name,
+                    length,
+                    importance
+                };
+                
+                movies.push(newMovie);
+                updateMovieList();
+                movieInput.value = '';
+                movieImportance.value = '5';
             } else {
                 alert("Inserisci il titolo del film!");
             }
         }
 
-        // Funzione per aggiornare la lista dei film
+        // Function to remove a movie
+        function removeMovie(id) {
+            if (confirm("Sei sicuro di voler rimuovere questo film?")) {
+                movies = movies.filter(movie => movie.id !== id);
+                updateMovieList();
+            }
+        }
+
+        // Update movie list display
         function updateMovieList() {
-            const movieListElement = document.getElementById('movieList');
+            if (movies.length === 0) {
+                movieListElement.innerHTML = '<li class="empty-state">Nessun film nella lista. Aggiungi il tuo primo film!</li>';
+                return;
+            }
             
-            // Recupera i film da Firestore
-            getDocs(moviesCollection).then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    movieListElement.innerHTML = '<li class="empty-state">Nessun film nella lista. Aggiungi il tuo primo film!</li>';
-                    return;
-                }
+            movieListElement.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const li = document.createElement('li');
                 
-                movieListElement.innerHTML = '';
+                // Movie info
+                const movieInfo = document.createElement('div');
+                movieInfo.className = 'movie-info';
                 
-                querySnapshot.forEach((docSnap) => {
-                    const movie = docSnap.data();
-                    const li = document.createElement('li');
-                    
-                    // Contenuto film
-                    const movieContent = document.createElement('div');
-                    movieContent.className = 'movie-info';
-                    
-                    const nameDiv = document.createElement('div');
-                    nameDiv.className = 'movie-name';
-                    nameDiv.textContent = movie.name;
-                    
-                    const detailsDiv = document.createElement('div');
-                    detailsDiv.className = 'movie-details';
-                    
-                    const lengthSpan = document.createElement('span');
-                    lengthSpan.className = `movie-length ${movie.length}`;
-                    lengthSpan.textContent = movie.length === 'short' ? 'Corto' : 
-                                            movie.length === 'medium' ? 'Medio' : 'Lungo';
-                    
-                    const importanceSpan = document.createElement('span');
-                    importanceSpan.className = 'movie-importance';
-                    importanceSpan.textContent = `Importanza: ${movie.importance}/10`;
-                    
-                    detailsDiv.appendChild(lengthSpan);
-                    detailsDiv.appendChild(importanceSpan);
-                    
-                    movieContent.appendChild(nameDiv);
-                    movieContent.appendChild(detailsDiv);
-                    
-                    li.appendChild(movieContent);
-                    
-                    // Bottone per rimuovere il film
-                    const removeButton = document.createElement('button');
-                    removeButton.className = 'remove-btn';
-                    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
-                    removeButton.onclick = () => {
-                        if (confirm(`Sei sicuro di voler rimuovere "${movie.name}" dalla lista?`)) {
-                            deleteDoc(doc(db, "movies", docSnap.id)).then(() => {
-                                updateMovieList();
-                            }).catch((error) => {
-                                console.error('Errore durante la rimozione del film: ', error);
-                                alert("Si è verificato un errore durante la rimozione del film.");
-                            });
-                        }
-                    };
-
-                    li.appendChild(removeButton);
-                    movieListElement.appendChild(li);
-                });
-            }).catch((error) => {
-                console.error('Errore durante l\'ottenimento dei film da Firestore: ', error);
-                movieListElement.innerHTML = '<li class="empty-state">Errore nel caricamento dei film. Riprova più tardi.</li>';
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'movie-name';
+                nameDiv.textContent = movie.name;
+                
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'movie-details';
+                
+                const lengthSpan = document.createElement('span');
+                lengthSpan.className = `movie-length ${movie.length}`;
+                lengthSpan.textContent = movie.length === 'short' ? 'Corto' : 
+                                        movie.length === 'medium' ? 'Medio' : 'Lungo';
+                
+                const importanceSpan = document.createElement('span');
+                importanceSpan.className = 'movie-importance';
+                importanceSpan.textContent = `Importanza: ${movie.importance}/10`;
+                
+                detailsDiv.appendChild(lengthSpan);
+                detailsDiv.appendChild(importanceSpan);
+                
+                movieInfo.appendChild(nameDiv);
+                movieInfo.appendChild(detailsDiv);
+                
+                li.appendChild(movieInfo);
+                
+                // Remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                removeBtn.onclick = () => removeMovie(movie.id);
+                
+                li.appendChild(removeBtn);
+                movieListElement.appendChild(li);
             });
         }
 
+        // Choose a random movie
         function chooseRandomMovie() {
-            // Ottieni i film da Firestore
-            getDocs(moviesCollection).then((querySnapshot) => {
-                const movies = [];
-                const selectedLengths = getSelectedLengths();
-
-                querySnapshot.forEach((docSnap) => {
-                    const movie = docSnap.data();
-                    // Filtra per durata selezionata
-                    if (selectedLengths.includes(movie.length)) {
-                        movies.push({
-                            id: docSnap.id,
-                            ...movie
-                        });
-                    }
-                });
-
-                // Se non ci sono film, mostra un messaggio
-                if (movies.length === 0) {
-                    document.getElementById('randomMovie').innerHTML = `
-                        <p class="empty-state">Nessun film trovato con i filtri selezionati!</p>
-                    `;
-                    return;
+            const selectedLengths = getSelectedLengths();
+            
+            // Filter movies by selected lengths
+            const filteredMovies = movies.filter(movie => 
+                selectedLengths.includes(movie.length)
+            );
+            
+            if (filteredMovies.length === 0) {
+                randomMovieElement.innerHTML = `
+                    <p class="empty-state">Nessun film trovato con i filtri selezionati!</p>
+                `;
+                return;
+            }
+            
+            // Calculate total weight (sum of importance)
+            const totalWeight = filteredMovies.reduce(
+                (sum, movie) => sum + movie.importance, 0
+            );
+            
+            // Select a random movie with weighted probability
+            let randomValue = Math.random() * totalWeight;
+            let chosenMovie = null;
+            
+            for (const movie of filteredMovies) {
+                randomValue -= movie.importance;
+                if (randomValue <= 0) {
+                    chosenMovie = movie;
+                    break;
                 }
-
-                // Calcola il peso totale in base all'importanza
-                const totalWeight = movies.reduce((sum, movie) => sum + movie.importance, 0);
-                
-                // Seleziona un film casuale con probabilità basata sull'importanza
-                let randomValue = Math.random() * totalWeight;
-                let chosenMovie = null;
-
-                for (const movie of movies) {
-                    randomValue -= movie.importance;
-                    if (randomValue <= 0) {
-                        chosenMovie = movie;
-                        break;
-                    }
-                }
-
-                // Mostra il film selezionato
-                const lengthMap = {
-                    short: 'Corto',
-                    medium: 'Medio',
-                    long: 'Lungo'
-                };
-                
-                document.getElementById('randomMovie').innerHTML = `
-                    <h3>Film Scelto:</h3>
-                    <div class="random-result">${chosenMovie.name}</div>
-                    <div class="result-details">
-                        <div class="result-detail">
-                            <i class="fas fa-clock"></i> ${lengthMap[chosenMovie.length]}
-                        </div>
-                        <div class="result-detail">
-                            <i class="fas fa-star"></i> Importanza: ${chosenMovie.importance}/10
-                        </div>
+            }
+            
+            // Display the chosen movie
+            const lengthMap = {
+                short: 'Corto',
+                medium: 'Medio',
+                long: 'Lungo'
+            };
+            
+            randomMovieElement.innerHTML = `
+                <h3>Film Scelto:</h3>
+                <div class="random-result">${chosenMovie.name}</div>
+                <div class="result-details">
+                    <div class="result-detail">
+                        <i class="fas fa-clock"></i> ${lengthMap[chosenMovie.length]}
                     </div>
-                `;
-            }).catch((error) => {
-                console.error("Errore nel recuperare i film: ", error);
-                document.getElementById('randomMovie').innerHTML = `
-                    <p class="empty-state">Errore nel recupero dei film. Riprova più tardi.</p>
-                `;
-            });
+                    <div class="result-detail">
+                        <i class="fas fa-star"></i> Importanza: ${chosenMovie.importance}/10
+                    </div>
+                </div>
+            `;
         }
 
-        // Ottieni le durate selezionate
+        // Get selected length filters
         function getSelectedLengths() {
             const checkboxes = document.querySelectorAll('.length-filter:checked');
             return Array.from(checkboxes).map(checkbox => checkbox.value);
         }
 
-        // Aggiungi gli event listener
-        document.getElementById('addMovieButton').addEventListener('click', addMovie);
-        document.getElementById('chooseRandomMovieButton').addEventListener('click', chooseRandomMovie);
-
-        // Carica la lista all'avvio
-        document.addEventListener("DOMContentLoaded", updateMovieList);
+        // Event listeners
+        addButton.addEventListener('click', addMovie);
+        randomButton.addEventListener('click', chooseRandomMovie);
+        
+        // Initialize the app
+        init();
