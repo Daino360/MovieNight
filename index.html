@@ -4,62 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Film</title>
+    <title>Movie Night - Lista Film</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Lista Film</h1>
-        
-        <!-- Campo per aggiungere un film -->
-        <input type="text" id="movieInput" placeholder="Aggiungi un film">
-        
-        <!-- Durata del film -->
-        <div class="filter-section">
-            <label for="movieLength">Durata:</label>
-            <select id="movieLength">
-                <option value="short">Corto (&lt;90 min)</option>
-                <option value="medium" selected>Medio (90-120 min)</option>
-                <option value="long">Lungo (&gt;120 min)</option>
-            </select>
+        <div class="header">
+            <h1><i class="fas fa-film"></i> Movie Night</h1>
+            <p class="subtitle">Organizza la tua serata cinema con la lista dei film da vedere</p>
         </div>
         
-        <!-- Importanza del film -->
-        <div class="filter-section">
-            <label for="movieImportance">Importanza (1-10):</label>
-            <input type="number" id="movieImportance" min="1" max="10" value="5">
-        </div>
-        
-        <!-- Bottone per aggiungere il film -->
-        <button id="addMovieButton">Aggiungi Film</button>
-        
-        <!-- Filtri per la selezione casuale -->
-        <div class="random-filter">
-            <h3>Filtri per selezione casuale:</h3>
-            <div class="length-filters">
-                <label>
-                    <input type="checkbox" class="length-filter" value="short" checked>
-                    Corto
-                </label>
-                <label>
-                    <input type="checkbox" class="length-filter" value="medium" checked>
-                    Medio
-                </label>
-                <label>
-                    <input type="checkbox" class="length-filter" value="long" checked>
-                    Lungo
-                </label>
+        <div class="content">
+            <div class="add-section">
+                <h2><i class="fas fa-plus-circle"></i> Aggiungi Film</h2>
+                <div class="input-group">
+                    <input type="text" id="movieInput" placeholder="Titolo del film">
+                    <select id="movieLength">
+                        <option value="short">Corto (&lt;90 min)</option>
+                        <option value="medium" selected>Medio (90-120 min)</option>
+                        <option value="long">Lungo (&gt;120 min)</option>
+                    </select>
+                    <input type="number" id="movieImportance" min="1" max="10" value="5" placeholder="Importanza (1-10)">
+                </div>
+                <div class="buttons">
+                    <button id="addMovieButton">
+                        <i class="fas fa-plus"></i> Aggiungi Film
+                    </button>
+                </div>
+            </div>
+            
+            <div class="random-section">
+                <h2><i class="fas fa-random"></i> Scegli Film Casuale</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Filtra per durata:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" class="length-filter" value="short" checked>
+                                Corto
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" class="length-filter" value="medium" checked>
+                                Medio
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" class="length-filter" value="long" checked>
+                                Lungo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button id="chooseRandomMovieButton">
+                        <i class="fas fa-ticket-alt"></i> Scegli Film Casuale
+                    </button>
+                </div>
+            </div>
+            
+            <div class="result-container">
+                <div id="randomMovie">
+                    <p class="empty-state">Clicca "Scegli Film Casuale" per selezionare un film</p>
+                </div>
+            </div>
+            
+            <div class="movie-list-container">
+                <h2><i class="fas fa-list"></i> La tua Lista Film</h2>
+                <div class="movie-list-header">
+                    <span>Film</span>
+                    <span>Azioni</span>
+                </div>
+                <ul id="movieList">
+                    <li class="empty-state">Nessun film nella lista. Aggiungi il tuo primo film!</li>
+                </ul>
             </div>
         </div>
-        
-        <!-- Bottone per scegliere un film casuale -->
-        <button id="chooseRandomMovieButton">Scegli Film Casuale</button>
-
-        <!-- Lista dei film -->
-        <ul id="movieList"></ul>
-
-        <!-- Area per mostrare il film casuale -->
-        <div id="randomMovie"></div>
     </div>
 
     <!-- Importazione dello script JavaScript -->
