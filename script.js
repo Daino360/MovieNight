@@ -22,10 +22,86 @@
         const movieInput = document.getElementById('movieInput');
         const movieLength = document.getElementById('movieLength');
         const movieImportance = document.getElementById('movieImportance');
+        const notification = document.getElementById('notification');
+
+        // Show notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
 
         // Initialize the app
         function init() {
-            loadMovies();
+            // Set up real-time listener for movies
+            moviesCollection.orderBy("name").onSnapshot((snapshot) => {
+                // Clear current list
+                movieListElement.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    movieListElement.innerHTML = '<li class="empty-state">Nessun film nella lista. Aggiungi il tuo primo film!</li>';
+                    return;
+                }
+                
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const movie = change.doc.data();
+                        const id = change.doc.id;
+                        addMovieToList(id, movie);
+                    }
+                    if (change.type === "removed") {
+                        // Handle removal if needed
+                    }
+                });
+            }, (error) => {
+                console.error("Error loading movies: ", error);
+                movieListElement.innerHTML = '<li class="empty-state">Errore nel caricamento dei film. Riprova più tardi.</li>';
+            });
+        }
+
+        // Add movie to the list
+        function addMovieToList(id, movie) {
+            const li = document.createElement('li');
+            
+            // Movie info
+            const movieInfo = document.createElement('div');
+            movieInfo.className = 'movie-info';
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'movie-name';
+            nameDiv.textContent = movie.name;
+            
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'movie-details';
+            
+            const lengthSpan = document.createElement('span');
+            lengthSpan.className = `movie-length ${movie.length}`;
+            lengthSpan.textContent = movie.length === 'short' ? 'Corto' : 
+                                    movie.length === 'medium' ? 'Medio' : 'Lungo';
+            
+            const importanceSpan = document.createElement('span');
+            importanceSpan.className = 'movie-importance';
+            importanceSpan.textContent = `Importanza: ${movie.importance}/10`;
+            
+            detailsDiv.appendChild(lengthSpan);
+            detailsDiv.appendChild(importanceSpan);
+            
+            movieInfo.appendChild(nameDiv);
+            movieInfo.appendChild(detailsDiv);
+            
+            li.appendChild(movieInfo);
+            
+            // Remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            removeBtn.onclick = () => removeMovie(id);
+            
+            li.appendChild(removeBtn);
+            movieListElement.appendChild(li);
         }
 
         // Function to add a movie
@@ -39,86 +115,30 @@
                 moviesCollection.add({
                     name: name,
                     length: length,
-                    importance: importance
+                    importance: importance,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     // Clear input fields
                     movieInput.value = '';
                     movieImportance.value = '5';
+                    showNotification("Film aggiunto con successo!");
                 }).catch((error) => {
                     console.error("Error adding movie: ", error);
-                    alert("Errore durante l'aggiunta del film. Riprova più tardi.");
+                    showNotification("Errore durante l'aggiunta del film!");
                 });
             } else {
-                alert("Inserisci il titolo del film!");
+                showNotification("Inserisci il titolo del film!");
             }
-        }
-
-        // Load movies from Firestore
-        function loadMovies() {
-            moviesCollection.orderBy("name").onSnapshot((snapshot) => {
-                // Clear current list
-                movieListElement.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    movieListElement.innerHTML = '<li class="empty-state">Nessun film nella lista. Aggiungi il tuo primo film!</li>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const movie = doc.data();
-                    const id = doc.id;
-                    
-                    const li = document.createElement('li');
-                    
-                    // Movie info
-                    const movieInfo = document.createElement('div');
-                    movieInfo.className = 'movie-info';
-                    
-                    const nameDiv = document.createElement('div');
-                    nameDiv.className = 'movie-name';
-                    nameDiv.textContent = movie.name;
-                    
-                    const detailsDiv = document.createElement('div');
-                    detailsDiv.className = 'movie-details';
-                    
-                    const lengthSpan = document.createElement('span');
-                    lengthSpan.className = `movie-length ${movie.length}`;
-                    lengthSpan.textContent = movie.length === 'short' ? 'Corto' : 
-                                            movie.length === 'medium' ? 'Medio' : 'Lungo';
-                    
-                    const importanceSpan = document.createElement('span');
-                    importanceSpan.className = 'movie-importance';
-                    importanceSpan.textContent = `Importanza: ${movie.importance}/10`;
-                    
-                    detailsDiv.appendChild(lengthSpan);
-                    detailsDiv.appendChild(importanceSpan);
-                    
-                    movieInfo.appendChild(nameDiv);
-                    movieInfo.appendChild(detailsDiv);
-                    
-                    li.appendChild(movieInfo);
-                    
-                    // Remove button
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                    removeBtn.onclick = () => removeMovie(id);
-                    
-                    li.appendChild(removeBtn);
-                    movieListElement.appendChild(li);
-                });
-            }, (error) => {
-                console.error("Error loading movies: ", error);
-                movieListElement.innerHTML = '<li class="empty-state">Errore nel caricamento dei film. Riprova più tardi.</li>';
-            });
         }
 
         // Function to remove a movie
         function removeMovie(id) {
             if (confirm("Sei sicuro di voler rimuovere questo film?")) {
-                moviesCollection.doc(id).delete().catch((error) => {
+                moviesCollection.doc(id).delete().then(() => {
+                    showNotification("Film rimosso con successo!");
+                }).catch((error) => {
                     console.error("Error removing movie: ", error);
-                    alert("Errore durante la rimozione del film. Riprova più tardi.");
+                    showNotification("Errore durante la rimozione del film!");
                 });
             }
         }
