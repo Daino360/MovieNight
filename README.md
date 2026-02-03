@@ -1,5 +1,11 @@
 # MovieNight
 
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
+![HTML5](https://img.shields.io/badge/HTML5-orange)
+![CSS3](https://img.shields.io/badge/CSS3-blue)
+![Firebase](https://img.shields.io/badge/Firestore-Firebase-lightblue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 **MovieNight** is a web application that helps manage personal movie watchlist and pick a random movie based on duration filters.  
 
 Built with **JavaScript, HTML, CSS** and using **Firebase** as the backend database.
